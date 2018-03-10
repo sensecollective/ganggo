@@ -20,7 +20,8 @@ package controllers
 import (
   "net/http"
   "github.com/revel/revel"
-  federation "github.com/ganggo/federation"
+  helpers "github.com/ganggo/federation/helpers"
+  diaspora "github.com/ganggo/federation/diaspora"
   run "github.com/revel/modules/jobs/app/jobs"
   "github.com/ganggo/ganggo/app/models"
   "github.com/ganggo/ganggo/app/jobs"
@@ -51,7 +52,7 @@ func (r Receiver) Public() revel.Result {
   // in case it succeeds reply with status 202
   r.Response.Status = http.StatusAccepted
 
-  msg, entity, err := federation.ParseDecryptedRequest(content)
+  msg, entity, err := diaspora.ParseDecryptedRequest(content)
   if err != nil {
     r.Log.Error("Cannot parse decrypted request", "error", err)
     // NOTE Send accept code even tho the entity is not
@@ -70,7 +71,7 @@ func (r Receiver) Public() revel.Result {
 func (r Receiver) Private() revel.Result {
   var (
     guid string
-    wrapper federation.AesWrapper
+    wrapper diaspora.AesWrapper
     person models.Person
     user models.User
   )
@@ -102,7 +103,7 @@ func (r Receiver) Private() revel.Result {
     return r.Render()
   }
 
-  privKey, err := federation.ParseRSAPrivateKey(
+  privKey, err := helpers.ParseRSAPrivateKey(
     []byte(user.SerializedPrivateKey))
   if err != nil {
     r.Log.Error(err.Error())
@@ -110,7 +111,7 @@ func (r Receiver) Private() revel.Result {
     return r.Render()
   }
 
-  msg, entity, err := federation.ParseEncryptedRequest(wrapper, privKey)
+  msg, entity, err := diaspora.ParseEncryptedRequest(wrapper, privKey)
   if err != nil {
     r.Log.Error("Cannot parse encrypted request", "error", err)
     // NOTE Send accept code even tho the entity is not

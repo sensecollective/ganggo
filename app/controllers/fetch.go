@@ -23,7 +23,8 @@ import (
   "github.com/revel/revel"
   "github.com/ganggo/ganggo/app/models"
   "github.com/ganggo/ganggo/app/helpers"
-  federation "github.com/ganggo/federation"
+  fhelpers "github.com/ganggo/federation/helpers"
+  diaspora "github.com/ganggo/federation/diaspora"
   "strings"
 )
 
@@ -58,14 +59,14 @@ func (f Fetch) Index(shareable, guid string) revel.Result {
     }
 
     if user, ok := post.IsLocal(); ok {
-      privKey, err := federation.ParseRSAPrivateKey(
+      privKey, err := fhelpers.ParseRSAPrivateKey(
         []byte(user.SerializedPrivateKey))
       if err != nil {
         f.Log.Error("Fetch parse key error", "err", err)
         return f.NotFound("record not found")
       }
 
-      entity := federation.EntityStatusMessage{
+      entity := diaspora.EntityStatusMessage{
         Text: post.Text,
         Author: post.Person.Author,
         Guid: post.Guid,
@@ -80,7 +81,7 @@ func (f Fetch) Index(shareable, guid string) revel.Result {
         return f.RenderError(err)
       }
 
-      payload, err = federation.MagicEnvelope(
+      payload, err = diaspora.MagicEnvelope(
         privKey, user.Person.Author, entityXml,
       )
       if err != nil {
