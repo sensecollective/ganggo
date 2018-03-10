@@ -21,10 +21,10 @@ import (
   "strings"
   "github.com/revel/revel"
   "github.com/ganggo/ganggo/app/models"
-  federation "github.com/ganggo/federation"
+  diaspora "github.com/ganggo/federation/diaspora"
 )
 
-func (r *Receiver) Retraction(retraction federation.EntityRetraction) {
+func (r *Receiver) Retraction(retraction diaspora.EntityRetraction) {
   db, err := models.OpenDatabase()
   if err != nil {
     revel.AppLog.Error(err.Error())

@@ -20,7 +20,7 @@ package models
 import (
   "time"
   "github.com/revel/revel"
-  federation "github.com/ganggo/federation"
+  diaspora "github.com/ganggo/federation/diaspora"
   "gopkg.in/ganggo/gorm.v2"
 )
 
@@ -74,7 +74,7 @@ func (Like) HasPublic() bool { return false }
 func (Like) IsPublic() bool { return false }
 // Model Interface Type
 
-func (l *Like) Create(entity *federation.EntityLike) (err error) {
+func (l *Like) Create(entity *diaspora.EntityLike) (err error) {
   db, err := OpenDatabase()
   if err != nil {
     return
@@ -142,7 +142,7 @@ func (l *Like) AfterDelete(db *gorm.DB) (err error) {
   return db.Where("like_id = ?", l.ID).Delete(LikeSignature{}).Error
 }
 
-func (l *Like) Cast(entity *federation.EntityLike) (err error) {
+func (l *Like) Cast(entity *diaspora.EntityLike) (err error) {
   db, err := OpenDatabase()
   if err != nil {
     return

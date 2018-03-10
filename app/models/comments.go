@@ -20,7 +20,7 @@ package models
 import (
   "time"
   "github.com/revel/revel"
-  federation "github.com/ganggo/federation"
+  diaspora "github.com/ganggo/federation/diaspora"
   "gopkg.in/ganggo/gorm.v2"
 )
 
@@ -117,7 +117,7 @@ func (c *Comment) AfterSave(db *gorm.DB) error {
   }
 }
 
-func (c *Comment) Create(entity *federation.EntityComment) (err error) {
+func (c *Comment) Create(entity *diaspora.EntityComment) (err error) {
   db, err := OpenDatabase()
   if err != nil {
     return
@@ -178,7 +178,7 @@ func (c *Comment) AfterDelete(db *gorm.DB) (err error) {
   return db.Where("like_id = ?", c.ID).Delete(LikeSignature{}).Error
 }
 
-func (c *Comment) Cast(entity *federation.EntityComment) (err error) {
+func (c *Comment) Cast(entity *diaspora.EntityComment) (err error) {
   db, err := OpenDatabase()
   if err != nil {
     return

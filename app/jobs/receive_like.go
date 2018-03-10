@@ -20,11 +20,11 @@ package jobs
 import (
   "github.com/revel/revel"
   "github.com/ganggo/ganggo/app/models"
-  federation "github.com/ganggo/federation"
+  diaspora "github.com/ganggo/federation/diaspora"
   run "github.com/revel/modules/jobs/app/jobs"
 )
 
-func (receiver *Receiver) Like(entity federation.EntityLike) {
+func (receiver *Receiver) Like(entity diaspora.EntityLike) {
   var like models.Like
   db, err := models.OpenDatabase()
   if err != nil {

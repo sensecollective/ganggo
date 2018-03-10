@@ -23,6 +23,7 @@ import (
   "github.com/ganggo/ganggo/app/models"
   "github.com/ganggo/ganggo/app/helpers"
   federation "github.com/ganggo/federation"
+  //activitypub "github.com/ganggo/federation/activitypub"
 )
 
 type FetchAuthor struct {
@@ -32,6 +33,43 @@ type FetchAuthor struct {
 }
 
 func (fetch *FetchAuthor) Run() {
+  if len(fetch.Author) > 3 && fetch.Author[:3] == "http" {
+    fetch.activityPub()
+  } else {
+    fetch.diaspora()
+  }
+}
+
+func (fetch *FetchAuthor) activityPub() {
+  //var actor activitypub.ActivityActor
+  //err := federation.FetchJson("GET", fetch.Author, nil, &actor)
+  //if err != nil {
+  //  revel.AppLog.Error(err.Error())
+  //  (*fetch).Err = err
+  //  return
+  //}
+
+  //(*fetch).Person = models.Person{
+  //  Guid: actor.Id,
+  //  Author: fetch.Author,
+  //  SerializedPublicKey: hcard.PublicKey,
+  //  PodID: pod.ID,
+  //  Profile: models.Profile{
+  //    Author: fetch.Author,
+  //    FullName: hcard.FullName,
+  //    Searchable: hcard.Searchable,
+  //    FirstName: hcard.FirstName,
+  //    LastName: hcard.LastName,
+  //    ImageUrl: hcard.Photo,
+  //    ImageUrlSmall: hcard.PhotoSmall,
+  //    ImageUrlMedium: hcard.PhotoMedium,
+  //  },
+  //  Contacts: models.Contacts{},
+  //}
+
+}
+
+func (fetch *FetchAuthor) diaspora() {
   var person models.Person
   _, host, err := helpers.ParseAuthor(fetch.Author)
   if err != nil {

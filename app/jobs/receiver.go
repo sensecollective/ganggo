@@ -21,11 +21,13 @@ import (
   "github.com/revel/revel"
   "github.com/ganggo/ganggo/app/models"
   federation "github.com/ganggo/federation"
+  helpers "github.com/ganggo/federation/helpers"
+  diaspora "github.com/ganggo/federation/diaspora"
 )
 
 type Receiver struct {
-  Message federation.Message
-  Entity federation.Entity
+  Message diaspora.Message
+  Entity diaspora.Entity
   Guid string
 }
 
@@ -37,27 +39,27 @@ func (receiver Receiver) Run() {
   }
 
   switch entity := receiver.Entity.Data.(type) {
-  case federation.EntityRetraction:
+  case diaspora.EntityRetraction:
     if _, ok := receiver.CheckAuthor(entity.Author); ok {
       revel.AppLog.Debug("Starting retraction receiver")
       receiver.Retraction(entity)
     }
-  case federation.EntityProfile:
+  case diaspora.EntityProfile:
     if _, ok := receiver.CheckAuthor(entity.Author); ok {
       revel.AppLog.Debug("Starting profile receiver")
       receiver.Profile(entity)
     }
-  case federation.EntityReshare:
+  case diaspora.EntityReshare:
     if _, ok := receiver.CheckAuthor(entity.Author); ok {
       revel.AppLog.Debug("Starting reshare receiver")
       receiver.Reshare(entity)
     }
-  case federation.EntityStatusMessage:
+  case diaspora.EntityStatusMessage:
     if _, ok := receiver.CheckAuthor(entity.Author); ok {
       revel.AppLog.Debug("Starting status message receiver")
       receiver.StatusMessage(entity)
     }
-  case federation.EntityComment:
+  case diaspora.EntityComment:
     if person, ok := receiver.CheckAuthor(entity.Author); ok {
       revel.AppLog.Debug("Starting comment receiver")
       // validate author_signature
@@ -67,7 +69,7 @@ func (receiver Receiver) Run() {
         revel.AppLog.Error("invalid sig", "entity", entity)
       }
     }
-  case federation.EntityLike:
+  case diaspora.EntityLike:
     if person, ok := receiver.CheckAuthor(entity.Author); ok {
       revel.AppLog.Debug("Starting like receiver")
       // validate author_signature
@@ -75,7 +77,7 @@ func (receiver Receiver) Run() {
         receiver.Like(entity)
       }
     }
-  case federation.EntityContact:
+  case diaspora.EntityContact:
     if _, ok := receiver.CheckAuthor(entity.Author); ok {
       revel.AppLog.Debug("Starting contact receiver")
       receiver.Contact(entity)
@@ -96,7 +98,7 @@ func (receiver *Receiver) CheckAuthor(author string) (models.Person, bool) {
 }
 
 func valid(person models.Person, entity federation.SignatureInterface, order string) bool {
-  pubKey, err := federation.ParseRSAPublicKey(
+  pubKey, err := helpers.ParseRSAPublicKey(
     []byte(person.SerializedPublicKey))
   if err != nil {
     revel.AppLog.Error(err.Error())

@@ -20,7 +20,7 @@ package models
 import (
   "time"
   "github.com/ganggo/ganggo/app/helpers"
-  federation "github.com/ganggo/federation"
+  diaspora "github.com/ganggo/federation/diaspora"
   "github.com/revel/revel"
 )
 
@@ -47,7 +47,7 @@ type Profile struct {
   Nsfw bool
 }
 
-func (p *Profile) Cast(entity *federation.EntityProfile) (err error) {
+func (p *Profile) Cast(entity *diaspora.EntityProfile) (err error) {
   db, err := OpenDatabase()
   if err != nil {
     return

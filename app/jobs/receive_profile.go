@@ -21,11 +21,11 @@ import (
   "github.com/revel/revel"
   "github.com/ganggo/ganggo/app/helpers"
   "github.com/ganggo/ganggo/app/models"
-  federation "github.com/ganggo/federation"
+  diaspora "github.com/ganggo/federation/diaspora"
   "strings"
 )
 
-func (receiver *Receiver) Profile(profile federation.EntityProfile) {
+func (receiver *Receiver) Profile(profile diaspora.EntityProfile) {
   var profileModel models.Profile
   err := profileModel.FindByAuthor(profile.Author)
   if err != nil {

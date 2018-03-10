@@ -20,10 +20,10 @@ package jobs
 import (
   "github.com/revel/revel"
   "github.com/ganggo/ganggo/app/models"
-  federation "github.com/ganggo/federation"
+  diaspora "github.com/ganggo/federation/diaspora"
 )
 
-func (receiver *Receiver) Contact(entity federation.EntityContact) {
+func (receiver *Receiver) Contact(entity diaspora.EntityContact) {
   db, err := models.OpenDatabase()
   if err != nil {
     revel.AppLog.Warn(err.Error())

@@ -20,7 +20,7 @@ package models
 import (
   "time"
   "github.com/ganggo/ganggo/app/helpers"
-  federation "github.com/ganggo/federation"
+  diaspora "github.com/ganggo/federation/diaspora"
   "gopkg.in/ganggo/gorm.v2"
 )
 
@@ -73,7 +73,7 @@ func (c *Contact) AfterSave(db *gorm.DB) error {
   return nil
 }
 
-func (c *Contact) Cast(entity *federation.EntityContact) (err error) {
+func (c *Contact) Cast(entity *diaspora.EntityContact) (err error) {
   var recipient User
   var sender Person
 
@@ -103,4 +103,14 @@ func (c *Contact) Cast(entity *federation.EntityContact) (err error) {
   (*c).Receiving = entity.Following
   (*c).Sharing = entity.Sharing
   return
+}
+
+func (c *Contacts) FindByUserID(id uint) error {
+  db, err := OpenDatabase()
+  if err != nil {
+    return err
+  }
+  defer db.Close()
+
+  return db.Where("user_id = ?", id).Find(c).Error
 }

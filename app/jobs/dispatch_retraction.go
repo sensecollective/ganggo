@@ -21,11 +21,11 @@ import (
   "encoding/xml"
   "github.com/revel/revel"
   "github.com/ganggo/ganggo/app/models"
-  federation "github.com/ganggo/federation"
+  diaspora "github.com/ganggo/federation/diaspora"
   "strings"
 )
 
-func (dispatcher *Dispatcher) Retraction(retraction federation.EntityRetraction) {
+func (dispatcher *Dispatcher) Retraction(retraction diaspora.EntityRetraction) {
   var (
     parentPost models.Post
     parentUser models.User

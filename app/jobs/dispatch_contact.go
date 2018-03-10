@@ -23,10 +23,11 @@ import (
   run "github.com/revel/modules/jobs/app/jobs"
   "github.com/ganggo/ganggo/app/models"
   "github.com/ganggo/ganggo/app/helpers"
-  federation "github.com/ganggo/federation"
+  fhelpers "github.com/ganggo/federation/helpers"
+  diaspora "github.com/ganggo/federation/diaspora"
 )
 
-func (dispatcher *Dispatcher) Contact(contact federation.EntityContact) {
+func (dispatcher *Dispatcher) Contact(contact diaspora.EntityContact) {
   _, host, err := helpers.ParseAuthor(contact.Recipient)
   if err != nil {
     revel.AppLog.Error(err.Error())
@@ -46,21 +47,21 @@ func (dispatcher *Dispatcher) Contact(contact federation.EntityContact) {
     return
   }
 
-  privKey, err := federation.ParseRSAPrivateKey(
+  privKey, err := fhelpers.ParseRSAPrivateKey(
     []byte(dispatcher.User.SerializedPrivateKey))
   if err != nil {
     revel.AppLog.Error(err.Error())
     return
   }
 
-  pubKey, err := federation.ParseRSAPublicKey(
+  pubKey, err := fhelpers.ParseRSAPublicKey(
     []byte(person.SerializedPublicKey))
   if err != nil {
     revel.AppLog.Error(err.Error())
     return
   }
 
-  payload, err := federation.EncryptedMagicEnvelope(
+  payload, err := diaspora.EncryptedMagicEnvelope(
     privKey, pubKey, contact.Author, entityXml)
   if err != nil {
     revel.AppLog.Error(err.Error())

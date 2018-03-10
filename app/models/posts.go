@@ -20,7 +20,7 @@ package models
 import (
   "time"
   "gopkg.in/ganggo/gorm.v2"
-  federation "github.com/ganggo/federation"
+  diaspora "github.com/ganggo/federation/diaspora"
   "github.com/revel/revel"
 )
 
@@ -203,7 +203,7 @@ func (p *Post) Cast(entity interface{}) (err error) {
   defer db.Close()
 
   var person Person
-  if statusMessage, ok := entity.(*federation.EntityStatusMessage); ok {
+  if statusMessage, ok := entity.(*diaspora.EntityStatusMessage); ok {
     err = person.FindByAuthor(statusMessage.Author)
     if err != nil {
       return
@@ -229,7 +229,7 @@ func (p *Post) Cast(entity interface{}) (err error) {
     (*p).Type = StatusMessage
     (*p).Text = statusMessage.Text
     (*p).ProviderName = statusMessage.ProviderName
-  } else if reshare, ok := entity.(*federation.EntityReshare); ok {
+  } else if reshare, ok := entity.(*diaspora.EntityReshare); ok {
     err = person.FindByAuthor(reshare.Author)
     if err != nil {
       return
