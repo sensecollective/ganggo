@@ -28,10 +28,22 @@ import (
 type Receiver struct {
   Message diaspora.Message
   Entity diaspora.Entity
+
+  Message2 federation.Message
+
   Guid string
 }
 
 func (receiver Receiver) Run() {
+  switch entity := receiver.Message2.Entity().(type) {
+  case federation.MessageContact:
+    if _, ok := receiver.CheckAuthor(entity.GetAuthor()); ok {
+      revel.AppLog.Debug("Starting contact receiver")
+      receiver.Contact(entity)
+    }
+    return // XXX
+  }
+
   // search for sender and check his signature
   person, ok := receiver.CheckAuthor(receiver.Message.Sig.KeyId)
   if !ok || !valid(person, receiver.Message, "") {
@@ -77,11 +89,6 @@ func (receiver Receiver) Run() {
         receiver.Like(entity)
       }
     }
-  case diaspora.EntityContact:
-    if _, ok := receiver.CheckAuthor(entity.Author); ok {
-      revel.AppLog.Debug("Starting contact receiver")
-      receiver.Contact(entity)
-    }
   default:
     revel.AppLog.Error("No matching entity found", "entity", receiver.Entity)
   }
@@ -97,7 +104,7 @@ func (receiver *Receiver) CheckAuthor(author string) (models.Person, bool) {
   return fetch.Person, fetch.Err == nil
 }
 
-func valid(person models.Person, entity federation.SignatureInterface, order string) bool {
+func valid(person models.Person, entity federation.Message, order string) bool {
   pubKey, err := helpers.ParseRSAPublicKey(
     []byte(person.SerializedPublicKey))
   if err != nil {

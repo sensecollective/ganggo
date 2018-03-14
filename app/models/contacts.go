@@ -20,7 +20,7 @@ package models
 import (
   "time"
   "github.com/ganggo/ganggo/app/helpers"
-  diaspora "github.com/ganggo/federation/diaspora"
+  federation "github.com/ganggo/federation"
   "gopkg.in/ganggo/gorm.v2"
 )
 
@@ -73,7 +73,7 @@ func (c *Contact) AfterSave(db *gorm.DB) error {
   return nil
 }
 
-func (c *Contact) Cast(entity *diaspora.EntityContact) (err error) {
+func (c *Contact) Cast(entity federation.MessageContact) (err error) {
   var recipient User
   var sender Person
 
@@ -83,9 +83,10 @@ func (c *Contact) Cast(entity *diaspora.EntityContact) (err error) {
   }
   defer db.Close()
 
-  username, _, err := helpers.ParseAuthor(entity.Recipient)
+  username, _, err := helpers.ParseAuthor(entity.GetRecipient())
   if err != nil {
-    return err
+    // fallback to non-handle recipient
+    username = entity.GetRecipient()
   }
 
   err = db.Where("username = ?", username).First(&recipient).Error
@@ -93,15 +94,17 @@ func (c *Contact) Cast(entity *diaspora.EntityContact) (err error) {
     return
   }
 
-  err = db.Where("author = ?", entity.Author).First(&sender).Error
+  err = db.Where("author = ?", entity.GetAuthor()).Or(
+    "guid = ?", entity.GetAuthor(),
+  ).First(&sender).Error
   if err != nil {
     return
   }
 
   (*c).UserID = recipient.ID
   (*c).PersonID = sender.ID
-  (*c).Receiving = entity.Following
-  (*c).Sharing = entity.Sharing
+  (*c).Receiving = entity.IsFollowing()
+  (*c).Sharing = entity.IsSharing()
   return
 }
 

@@ -102,7 +102,7 @@ func (c Webfinger) Webfinger() revel.Result {
       federation.WebfingerDataLink {
         Rel: "self",
         Type: "application/activity+json",
-        Href: proto + address + "/api/v0/activity/" + person.Guid + "/actor",
+        Href: proto + address + "/api/v0/activity/" + username + "/actor",
       },
       federation.WebfingerDataLink {
         Rel: "salmon",

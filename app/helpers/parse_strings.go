@@ -42,7 +42,12 @@ func ParseTags(text string) [][]string {
 func ParseAuthor(handle string) (string, string, error) {
   parts, err := parseStringHelper(handle, `^(.+?)@(.+?)$`, 2)
   if err != nil {
-    return "", "", err
+    // fallback to links
+    parts, err := parseStringHelper(handle, `^https{0,1}://([^/]+).*$`, 1)
+    if err != nil {
+      return "", "", err
+    }
+    return handle, parts[1], nil
   }
   return parts[1], parts[2], nil
 }

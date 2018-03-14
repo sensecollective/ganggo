@@ -20,10 +20,10 @@ package jobs
 import (
   "github.com/revel/revel"
   "github.com/ganggo/ganggo/app/models"
-  diaspora "github.com/ganggo/federation/diaspora"
+  federation "github.com/ganggo/federation"
 )
 
-func (receiver *Receiver) Contact(entity diaspora.EntityContact) {
+func (receiver *Receiver) Contact(entity federation.MessageContact) {
   db, err := models.OpenDatabase()
   if err != nil {
     revel.AppLog.Warn(err.Error())
@@ -34,7 +34,7 @@ func (receiver *Receiver) Contact(entity diaspora.EntityContact) {
   revel.AppLog.Debug("Found a contact entity", "entity", entity)
 
   var contact models.Contact
-  err = contact.Cast(&entity)
+  err = contact.Cast(entity)
   if err != nil {
     revel.AppLog.Warn(err.Error())
     return
